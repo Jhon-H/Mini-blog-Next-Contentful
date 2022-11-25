@@ -38,11 +38,11 @@ export const fetchGraphql = async (query: string, preview = false): Promise<any>
   }
 }
 
-export const extractPost = (fetchResponse) => {
+export const extractPost = (fetchResponse: any) => {
   return fetchResponse?.data?.postCollection?.items[0]
 }
 
-export const extractPostEntries = (fetchResponse) => {
+export const extractPostEntries = (fetchResponse: any) => {
   return fetchResponse?.data?.postCollection?.items
 }
 
