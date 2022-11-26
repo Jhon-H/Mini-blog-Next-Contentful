@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 type Data = 
   | { message: string }
-  | { revalidated: boolean }
+  | { revalidated: boolean; path: string; }
 
 
 // llame, por ejemplo, api/revalidate?secret=TOKEN, { slug: "post_slug" }
@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const { path = '-1' } = req.body.parameters as { path: string }
 
     await res.revalidate(path)
-    return res.json({ revalidated: true })
+    return res.json({ revalidated: true, path })
   
   } catch (err) {
     return res.status(500).json({ message: 'Error en la revalidación'})
