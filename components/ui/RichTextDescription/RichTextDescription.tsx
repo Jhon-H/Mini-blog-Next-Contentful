@@ -32,11 +32,6 @@ const renderOptions = (links: Object[]): Options => {
         return <hr className='bg-gray-800' />
       },
     },
-    renderText: text => {
-      return text.split('\n').reduce((children, textSegment, index) => {
-        return [...children, index > 0 && <br key={index} />, textSegment];
-      }, []);
-    },
   }
 }
 
