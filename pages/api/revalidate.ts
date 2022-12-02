@@ -8,11 +8,11 @@ type Data =
 // llame, por ejemplo, api/revalidate?secret=TOKEN, { slug: "post_slug" }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
-  if (!process.env.REVALIDATE_STATIC_PAGES) {
+  if (!process.env.CONTENTFUL_REVALIDATE_SECRET) {
     return res.status(401).json({ message: 'No autorizado'})
   }
 
-  if (req.query.secret !== process.env.REVALIDATE_STATIC_PAGES) {
+  if (req.query.secret !== process.env.CONTENTFUL_REVALIDATE_SECRET) {
     return  res.status(401).json({ message: 'No autorizado'})
   }
 
@@ -20,6 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const { path = '-1' } = req.body.parameters as { path: string }
 
     await res.revalidate(path)
+    await res.revalidate("/")
     return res.json({ revalidated: true, path })
   
   } catch (err) {

@@ -1,19 +1,22 @@
-export interface PreviewPost {
+import { IRichTextStructGraphql } from "interface/richText";
+
+export interface IPreviewPost {
   slug: string;
   title: string;
   description: string;
+  longDescription: IRichTextStructGraphql
   date: Date;
-  image: PostImage;
+  image: IPostImage;
 }
 
-export interface PostImage {
+export interface IPostImage {
   url: string;
   title: string;
 }
 
-export interface Post extends PreviewPost {
+export interface IPost extends IPreviewPost {
   author: Author;
-  otherPosts: PreviewPost[]
+  otherPosts: IPreviewPost[]
 }
 
 export interface Author {

@@ -1,19 +1,19 @@
 import { GetStaticProps, GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import Image from 'next/image';
 
-import { Post, PreviewPost } from '../../interface/posts'
-import { getAllSlugs, getPostAndMorePosts } from '../../contentful/api'
+import { getAllSlugs, getPostAndMorePosts } from 'contentful/api'
+import { IPost, IPreviewPost } from 'interface/posts'
 
-import { MainLayout } from '../../components/layouts';
-import { PostPreview } from '../../components/ui';
+import { MainLayout } from 'components/layouts';
+import { OtherPreviewPosts, Post } from 'components/ui';
 
 interface Props {
-  post: Post;
-  morePosts: PreviewPost[];
+  post: IPost;
+  morePosts: IPreviewPost[];
+  preview: boolean;
 }
 
-const PostPage: NextPage<Props> = ({ post, morePosts }) => {
+const PostPage: NextPage<Props> = ({ post, morePosts, preview = false }) => {
   const router = useRouter()
 
   if (router.isFallback) {
@@ -21,47 +21,16 @@ const PostPage: NextPage<Props> = ({ post, morePosts }) => {
   }
 
   return (
-    <MainLayout title={`Bloguie | ${post.title.slice(0, 20)}...`} description={`${post.description.slice(0, 50)}`}>
-      <div>
-        <div>
-          <picture style={{ width: '100%', height: '300px' }}>
-            <Image
-              src={post.image.url}
-              alt={post.image.title}
-              width={400}
-              height={400}
-              style={{ objectFit: 'cover', width: '100%'}}
-            />
-          </picture>
+    <MainLayout
+      title={`Bloguie | ${post.title.slice(0, 20)}...`}
+      description={`${post.description.slice(0, 50)}`}
+      preview={preview}
+    >
+      <Post post={post} />
 
-          <div>
-            <p>Creado: {post.date.toString()}</p>
-            <p>Autor: {post.author?.name ?? 'every'}</p>
-            <h1>{post.title}</h1>
-          </div>
-        </div>
-
-        <p>{post.description}</p>
-
-        <div style={{ marginTop: '60px' }}>
-          <h2>Otros posts de interes</h2>
-          <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-            {
-              morePosts.map(({ date, description, image, slug, title }) => (
-                <div key={slug} style={{ width: 'max(300px, 30%)'}}>
-                  <PostPreview
-                    createdAt={date}
-                    imageTitle={image.title}
-                    imageUrl={image.url}
-                    shortDescription={description}
-                    slug={slug}
-                    title={title}
-                  />
-                </div>
-              ))
-            }
-          </div>
-        </div>
+      <div className='mt-10'>
+        <h2 className='font-semibold mb-4 text-lg'>Otros posts de interes</h2>
+        <OtherPreviewPosts posts={morePosts} />
       </div>
     </MainLayout>
   )
@@ -76,13 +45,15 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
     }
   }))
 
+  console.log({ paths })
+
   return { paths,  fallback: true }
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
-  const { slug  = '' } = ctx.params as { slug: string } 
+export const getStaticProps: GetStaticProps = async ({ params, preview = false }) => {
+  const { slug  = '' } = params as { slug: string }
   
-  const { post, morePosts } = await getPostAndMorePosts(slug)
+  const { post, morePosts } = await getPostAndMorePosts(slug, false)
 
   if (!post) {
     return {
@@ -93,7 +64,8 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
   return {
     props: {
       post,
-      morePosts
+      morePosts,
+      preview
     },
     revalidate: 604800 // every week
   }

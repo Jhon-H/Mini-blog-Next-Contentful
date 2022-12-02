@@ -1,15 +1,15 @@
 import { ReactElement } from 'react'
 import Head from 'next/head'
-
-import styles from './MainLayout.module.scss'
+import { AlertPreview } from 'components/ui';
 
 interface Props {
   children: ReactElement | ReactElement[];
   title: string;
   description?: string;
+  preview?: boolean;
 }
 
-export const MainLayout = ({ children, title, description = '' }: Props) => {
+export const MainLayout = ({ children, title, description = '', preview = false }: Props) => {
   return (
     <>
       <Head>
@@ -17,7 +17,8 @@ export const MainLayout = ({ children, title, description = '' }: Props) => {
         <meta name="description" content={description} />
       </Head>
 
-      <main className={styles['main-layout']}>
+      <main className='py-16 px-40'>
+        {preview && <AlertPreview />}
         {children}
       </main>
     </>
